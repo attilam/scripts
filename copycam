@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+$FROM_PATH = "/Volumes/INDYSAN/DCIM"
+$TO_PATH = "/Volumes/MrData/Pictures/CameraRoll"
+$EXTENSIONS = %w[.jpg .rw2]
+
+def walk(basePath)
+  Dir.foreach(basePath) do |el|
+    path = File.join(basePath, el)
+
+    if el == '.' or el == '..'
+      next
+    elsif File.directory?(path)
+      walk path
+    else
+      isPic = $EXTENSIONS.any? { |ext| path.downcase.end_with?(ext) }
+
+      if isPic and not el.start_with?('.')
+        copyIfDiff(path)
+      end
+    end
+  end
+end
+
+def copyIfDiff(sourcePath)
+  baseName = File.basename(sourcePath)
+  sourceDate = File.birthtime(sourcePath)
+  targetPath = File.join($TO_PATH, sourceDate.strftime('%Y'), sourceDate.strftime('%Y-%m-%d'), baseName)
+
+  if File.exists?(targetPath)
+    if File.size(sourcePath) != File.size(targetPath)
+      copy sourcePath, targetPath
+    # else
+    #  puts "EXISTS "+sourcePath.gsub($FROM_PATH, '')
+    end
+  else
+    copy sourcePath, targetPath
+  end
+end
+
+def copy(sourcePath, targetPath)
+  FileUtils.mkdir_p(File.dirname(targetPath))
+  FileUtils.cp sourcePath, targetPath
+  puts "COPIED "+targetPath.gsub($TO_PATH, '')
+end
+
+walk $FROM_PATH
