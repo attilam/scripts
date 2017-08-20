@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+fname=$(basename -a $1)
+underscore=${fname//[[:space:]]/_}
+targetname="http://attilam.com/shared/$underscore"
+curl -s -n -T "$1" ftp://attilam.com/public_html/shared/$underscore
+echo -n $targetname | pbcopy
+osascript -e "display notification \"$targetname\" with title \"File uploaded.\""

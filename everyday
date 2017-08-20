@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# setup variables
+today=`date +"%Y-%m-%d"`
+now=`date +"%Y-%m-%d %T"`
+sourcePath="/Users/attila/Desktop"
+destPath="/Users/attila/Work/Everydays/"
+
+# compress everyday folder
+cd $sourcePath
+zip -r $destPath$today.zip Everyday
+
+# create readme
+cat >$destPath$today.md <<EOF
+---
+title: $today
+kind: article
+created_at: $now
+keywords: blah
+---
+
+## $today
+
+Blah
+EOF
+
+# trash the contents of the Everyday folder
+# mv $sourcePath/Everyday ~/.Trash
+# mkdir $sourcePath/Everyday

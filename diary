@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+rootPath = "~/Dropbox/Braindump/Diary"
+rootPath.gsub!("~", ENV['HOME'])
+
+filePath = rootPath+"/"+Time.now.strftime("%Y-%m-%d")+".md" # _%H-%M-%S
+
+puts filePath
+
+if !File.exists?(filePath)
+  open(filePath, 'w') do |f|
+  	f << "---\n"
+  	f << "created_at: "+Time.now.to_s+"\n"
+  	f << "---\n"
+  end
+end
+
+open(filePath, 'a') do |f|
+  f << "\n"
+  f << Time.now.strftime("%H:%M - ")
+end
+
+system(ENV['EDITOR']+' '+filePath)
