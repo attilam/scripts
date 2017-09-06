@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+rootPath = "/Volumes/MrData/Projects/log"
+filePath = rootPath+"/"+Time.now.strftime("%Y-%b").downcase+".yml"
+
+puts filePath
+
+if !File.exists?(filePath)
+  open(filePath, 'w') do |f|
+    f << "---\n"
+    f << "title: Log for #{Time.now.strftime('%Y-%B')}\n"
+    f << "created_at: "+Time.now.to_s+"\n"
+    f << "kind: log\n"
+    f << "---\n"
+    f << "data:\n"
+  end
+end
+
+open(filePath, 'a') do |f|
+  f << "-\n"
+  f << "  date: "+Time.now.to_s+"\n"
+  f << "  project: none\n"
+  f << "  comment: |\n"
+  f << "    BLAH\n"
+end
+
+system(ENV['EDITOR']+' '+filePath)
