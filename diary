@@ -1,4 +1,10 @@
 #!/usr/bin/env ruby
+
+require "json"
+
+require 'net/http'
+require 'uri'
+
 rootPath = "~/Dropbox/Braindump/Diary"
 rootPath.gsub!("~", ENV['HOME'])
 
@@ -6,10 +12,39 @@ filePath = rootPath+"/"+Time.now.strftime("%Y-%m-%d")+".md" # _%H-%M-%S
 
 puts filePath
 
+def get_location()
+  if ARGV.include? '-noloc'
+    return ""
+  end
+
+  # brew install locateme
+  location = `locateme -f "lat={LAT}&lon={LON}"`
+  location.delete!("\n")
+
+  # https://jhawthorn.github.io/curl-to-ruby/
+  # result = `curl -s 'http://nominatim.openstreetmap.org/reverse?format=json&#{location}&addressdetails=1'`
+
+  uri = URI.parse("http://nominatim.openstreetmap.org/reverse?format=json&#{location}&addressdetails=1")
+  response = Net::HTTP.get_response(uri)
+
+  if response.code != "200" then
+    return ""
+  end
+
+  json = JSON.parse(response.body) rescue nil
+
+  if json != nil then
+    return "#{json["address"]["town"]}, #{json["address"]["country_code"].upcase}"
+  else
+    return ""
+  end
+end
+
 if !File.exists?(filePath)
   open(filePath, 'w') do |f|
   	f << %(---
 created_at: #{Time.now.to_s}
+location: #{get_location()}
 ---
 
 # Diary for #{Time.now.strftime("%Y-%m-%d, %A")}
