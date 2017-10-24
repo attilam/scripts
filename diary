@@ -5,8 +5,14 @@ require "json"
 require 'net/http'
 require 'uri'
 
-rootPath = "~/Dropbox/Braindump/Diary"
+rootPath = "~/Dropbox/Braindump/"
 rootPath.gsub!("~", ENV['HOME'])
+
+if ARGV.size > 0 and !ARGV.last.start_with? "-"
+  rootPath += ARGV.last
+else
+  rootPath += "Diary"
+end
 
 filePath = rootPath+"/"+Time.now.strftime("%Y-%m-%d")+".md" # _%H-%M-%S
 
