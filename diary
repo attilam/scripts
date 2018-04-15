@@ -18,8 +18,24 @@ filePath = rootPath+"/"+Time.now.strftime("%Y-%m-%d")+".md" # _%H-%M-%S
 
 puts filePath
 
+# https://stackoverflow.com/questions/2108727/which-in-ruby-checking-if-program-exists-in-path-from-ruby
+def which(cmd)
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    exts.each { |ext|
+      exe = File.join(path, "#{cmd}#{ext}")
+      return exe if File.executable?(exe) && !File.directory?(exe)
+    }
+  end
+  return nil
+end
+
 def get_location()
   if ARGV.include? '-noloc'
+    return ""
+  end
+
+  if which('locateme') == nil
     return ""
   end
 
